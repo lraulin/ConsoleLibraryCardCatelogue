@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace ConsoleLibraryCardCatelogue
 {
@@ -31,12 +33,14 @@ namespace ConsoleLibraryCardCatelogue
 
                     case "3":
                         Console.WriteLine("Exiting...");
+                        catalogue.Save();
                         return;
+
                     default:
                         Console.WriteLine("Invalid choice.");
                         break;
                 }
-                System.Console.WriteLine("Press any key to continue.");
+                Console.WriteLine("Press any key to continue.");
                 Console.ReadLine();
             }
         }
@@ -56,12 +60,20 @@ namespace ConsoleLibraryCardCatelogue
     [Serializable]
     public class CardCatelogue
     {
-        public String Filename { get; set; }
+        private const string DATA_FILENAME = "ConsoleLibraryCardCatalogue.dat";
+        private BinaryFormatter formatter;
+
         public List<Book> Books { get; set; }
 
         public CardCatelogue()
         {
-            Books = new List<Book>();
+            formatter = new BinaryFormatter();
+            Load();
+
+            // test data
+            Book aBook = new Book();
+            aBook.Title = "Enlightenment Now";
+            Books.Add(aBook);
         }
 
         // public CardCatelogue(string fileName)
@@ -76,7 +88,7 @@ namespace ConsoleLibraryCardCatelogue
                 Console.WriteLine(book.Title);
             }
 
-            System.Console.WriteLine("Press any key to continue.");
+            Console.WriteLine("Press any key to continue.");
         }
 
         public void AddBook()
@@ -84,24 +96,61 @@ namespace ConsoleLibraryCardCatelogue
             Book book = new Book();
             Console.Write("Title:                 ");
             book.Title = Console.ReadLine();
-            Console.WriteLine("\nAuthor:          ");
+            Console.Write("\nAuthor:          ");
             book.Author = Console.ReadLine();
-            Console.WriteLine("\nNumber of Pages: ");
+            Console.Write("\nNumber of Pages: ");
             // validate
             book.Pages = int.Parse(Console.ReadLine());
-            Console.WriteLine("\nRating (1~5):    ");
+            Console.Write("\nRating (1~5):    ");
             book.Rating = int.Parse(Console.ReadLine());
-            Console.WriteLine("\nYear Published:  ");
+            Console.Write("\nYear Published:  ");
             book.PublicationYear = int.Parse(Console.ReadLine());
+
             Books.Add(book);
         }
 
         public void Save()
         {
-            System.Console.WriteLine("Saving file...");
-            System.Console.WriteLine();
-            System.Console.WriteLine("Press any key to continue.");
+            Console.WriteLine("Saving file...");
+            try
+            {
+                FileStream writerFileStream = new FileStream(DATA_FILENAME, FileMode.Create, FileAccess.Write);
+                formatter.Serialize(writerFileStream, Books);
+                writerFileStream.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            Console.WriteLine();
+            Console.WriteLine("Press any key to continue.");
         }
+
+        public void Load()
+        {
+            if (File.Exists(DATA_FILENAME))
+            {
+                try
+                {
+                    // Create a FileStream will gain read access to the data file.
+                    FileStream readerFileStream = new FileStream(DATA_FILENAME, FileMode.Open, FileAccess.Read);
+                    // Reconstruct information of from file.
+                    Books = (List<Book>)formatter.Deserialize(readerFileStream);
+                    // Close the readerFileStream when we are done
+                    readerFileStream.Close();
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("There seems to be a file that contains " +
+                        "friends information but somehow there is a problem " +
+                        "with reading it.");
+                } // end try-catch
+            } // end if
+            else
+            {
+                Books = new List<Book>();
+            }
+        } // end Load()
     }
 }
 
