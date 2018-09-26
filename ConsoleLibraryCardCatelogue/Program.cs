@@ -69,11 +69,6 @@ namespace ConsoleLibraryCardCatelogue
         {
             formatter = new BinaryFormatter();
             Load();
-
-            // test data
-            Book aBook = new Book();
-            aBook.Title = "Enlightenment Now";
-            Books.Add(aBook);
         }
 
         // public CardCatelogue(string fileName)
@@ -100,11 +95,14 @@ namespace ConsoleLibraryCardCatelogue
             book.Author = Console.ReadLine();
             Console.Write("\nNumber of Pages: ");
             // validate
-            book.Pages = int.Parse(Console.ReadLine());
+            int.TryParse(Console.ReadLine(), out int numberOfPages);
+            book.Pages = numberOfPages;
             Console.Write("\nRating (1~5):    ");
-            book.Rating = int.Parse(Console.ReadLine());
+            int.TryParse(Console.ReadLine(), out int rating);
+            book.Rating = rating;
             Console.Write("\nYear Published:  ");
-            book.PublicationYear = int.Parse(Console.ReadLine());
+            int.TryParse(Console.ReadLine(), out int pubYear);
+            book.PublicationYear = pubYear;
 
             Books.Add(book);
         }
