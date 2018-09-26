@@ -21,6 +21,7 @@ namespace ConsoleLibraryCardCatelogue
                 {
                     case "1":
                         Console.WriteLine("Listing books...");
+                        catalogue.ListBooks();
                         break;
 
                     case "2":
@@ -57,6 +58,12 @@ namespace ConsoleLibraryCardCatelogue
     {
         public String Filename { get; set; }
         public List<Book> Books { get; set; }
+
+        public CardCatelogue()
+        {
+            Books = new List<Book>();
+        }
+
         // public CardCatelogue(string fileName)
         // {
         // TODO
@@ -64,8 +71,11 @@ namespace ConsoleLibraryCardCatelogue
 
         public void ListBooks()
         {
-            System.Console.WriteLine("Here is the list of books.");
-            System.Console.WriteLine();
+            foreach (var book in Books)
+            {
+                Console.WriteLine(book.Title);
+            }
+
             System.Console.WriteLine("Press any key to continue.");
         }
 
